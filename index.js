@@ -15,30 +15,29 @@ app.listen(port, () => {
 
 // https://mongoosejs.com/docs/
 const mongoose = require('mongoose');
+const User = require('./models/user');
 
 main().then(() => console.log("mongodb is connected")).catch(err => console.log(err));
 
 async function main() {
   await mongoose.connect('mongodb+srv://sa:W6Ym9SRNV8j7yhpn@cluster0.upgxv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
 
-  const s_exists = await Kitten.find({ name: /^Silence/ });
+  await addUsertoDB({
+    name:"mohamed",
+    email: "a@a.com",
+    password: "newpassword"
+  });
   
-  if (!s_exists) {
-    const silence = new Kitten({ name: 'Silence' });
-    await silence.save();
-  }
-
-  const f_exists = await Kitten.find({ name: /^fluffy/ });
-
-  if (!f_exists) {
-    const fluffy = new Kitten({ name: 'fluffy' });
-    await fluffy.save();
-  }
-  Kitten.find().then(k=>console.log(k));
+  const users = await User.find();
+  console.log(users);
 }
 
-const kittySchema = new mongoose.Schema({
-  name: String
-});
-
-const Kitten = mongoose.model('Kitten', kittySchema);
+const addUsertoDB = async (user) =>{
+  //check if user exists before adding him
+  const user_exists = await User.find({email: user.email});
+  console.log(user_exists);
+  if(!user_exists.length){
+    const new_user = new User(user);
+    await new_user.save();
+  }
+}
