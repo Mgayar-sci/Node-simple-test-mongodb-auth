@@ -21,19 +21,36 @@ main().then(() => console.log("mongodb is connected")).catch(err => console.log(
 
 async function main() {
   await mongoose.connect('mongodb+srv://sa:W6Ym9SRNV8j7yhpn@cluster0.upgxv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
-
-  await addUsertoDB({
-    name: "mohamed",
-    email: "a@a.com",
-    password: "newpassword"
-  });
-
-  console.log(await getAllUsers(10));
-
-  login({ email: "a@a.com", password: "newpassword1" }).then(u => console.log('user', u)).catch(err => console.log(`err`, err))
 }
 
-const getAllUsers = async (limit)=>{
+app.get('/login', (req, res) => {
+  const { email, password } = req.query;
+
+  if (!email || !password) {
+    error = { error: "no email or password" };
+    console.log(`error`, error);
+    return res.status(401).send(error);
+  }
+  // await addUsertoDB({
+  //   name: "mohamed",
+  //   email: "a@a.com",
+  //   password: "newpassword"
+  // });
+
+  // console.log(await getAllUsers(10));
+
+  login({ email, password })
+    .then(user => {
+      console.log('user', user);
+      return res.status(200).send(user);
+    })
+    .catch(err => {
+      console.log(`err`, err.message);
+      return res.status(401).send({ error: err.message });
+    })
+})
+
+const getAllUsers = async (limit) => {
   return await User.find().limit(limit);
 }
 
