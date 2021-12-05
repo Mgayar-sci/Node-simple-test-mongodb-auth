@@ -46,12 +46,6 @@ app.get('/login', (req, res) => {
 app.get('/list', (req, res) => {
   const { limit = 10 } = req.query;
 
-  // await addUsertoDB({
-  //   name: "mohamed",
-  //   email: "a@a.com",
-  //   password: "newpassword"
-  // });
-
   getAllUsers(limit)
     .then(users => {
       console.log(`users`, users);
@@ -59,8 +53,24 @@ app.get('/list', (req, res) => {
     })
     .catch(err => {
       console.log(`err`, err);
-      return res.status(404).send({ err });
+      return res.status(404).send({ error: err.message });
     });
+})
+
+app.get('/register', (req, res) => {
+  const { name, email, password } = req.query;
+  if (!name || !email || !password) {
+    return res.status(401).send({ error: "missing user data" });
+  }
+  addUsertoDB({ name, email, password })
+    .then(user => {
+      console.log(`Added user`, user);
+      return res.status(200).send(user);
+    })
+    .catch(err => {
+      console.log(`err`, err);
+      return res.status(401).send({ error: err.message });
+    })
 })
 
 const getAllUsers = async (limit) => {
@@ -74,7 +84,11 @@ const addUsertoDB = async (user) => {
   if (!user_exists) {
     const new_user = new User(user);
     await new_user.save();
+    new_user.password = undefined;
+    return new_user;
   }
+
+  throw new Error("email already exists");
 }
 
 const login = async (user) => {
