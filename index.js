@@ -3,6 +3,7 @@
 //git init
 const express = require('express');
 const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs');
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -80,6 +81,8 @@ const addUsertoDB = async (user) => {
   const user_exists = await User.findOne({ email: user.email });
   // console.log(user_exists);
   if (!user_exists) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
     const new_user = new User(user);
     await new_user.save();
     new_user.password = undefined;
@@ -96,7 +99,7 @@ const login = async (user) => {
   if (!existing_user) {
     throw new Error("User doesn't exist!");
   }
-  if (existing_user.password != user.password) {
+  if (!bcrypt.compareSync(user.password, existing_user.password)) {
     throw new Error("Login failed");
   }
   existing_user.password = undefined;
