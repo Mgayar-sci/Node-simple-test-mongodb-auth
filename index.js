@@ -1,17 +1,15 @@
 //https://expressjs.com/en/starter/installing.html
 //https://expressjs.com/en/starter/hello-world.html
 //git init
-const express = require('express')
-const app = express()
-const port = 5000
+const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config();
+const app = express();
+const port = process.env.PORT || 5000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+app.listen(port, () =>
+  console.log(`Server is listening at http://localhost:${port}`)
+);
 
 // https://mongoosejs.com/docs/
 const mongoose = require('mongoose');
@@ -20,7 +18,7 @@ const User = require('./models/user');
 main().then(() => console.log("mongodb is connected")).catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb+srv://sa:W6Ym9SRNV8j7yhpn@cluster0.upgxv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
+  await mongoose.connect(process.env.MONGO_URL);
 }
 
 app.get('/login', (req, res) => {
@@ -40,12 +38,12 @@ app.get('/login', (req, res) => {
     .catch(err => {
       console.log(`err`, err.message);
       return res.status(401).send({ error: err.message });
-    })
-})
+    });
+});
 
 app.get('/list', (req, res) => {
   const { limit = 10 } = req.query;
-  
+
   getAllUsers(limit)
     .then(users => {
       console.log(`users`, users);
@@ -55,7 +53,7 @@ app.get('/list', (req, res) => {
       console.log(`err`, err);
       return res.status(404).send({ error: err.message });
     });
-})
+});
 
 app.get('/register', (req, res) => {
   const { name, email, password } = req.query;
@@ -70,8 +68,8 @@ app.get('/register', (req, res) => {
     .catch(err => {
       console.log(`err`, err);
       return res.status(401).send({ error: err.message });
-    })
-})
+    });
+});
 
 const getAllUsers = async (n) => {
   return await (User.find().limit(n).select('-password'));
