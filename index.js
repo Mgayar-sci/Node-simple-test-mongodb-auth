@@ -31,13 +31,6 @@ app.get('/login', (req, res) => {
     console.log(`error`, error);
     return res.status(401).send(error);
   }
-  // await addUsertoDB({
-  //   name: "mohamed",
-  //   email: "a@a.com",
-  //   password: "newpassword"
-  // });
-
-  // console.log(await getAllUsers(10));
 
   login({ email, password })
     .then(user => {
@@ -48,6 +41,26 @@ app.get('/login', (req, res) => {
       console.log(`err`, err.message);
       return res.status(401).send({ error: err.message });
     })
+})
+
+app.get('/list', (req, res) => {
+  const { limit = 10 } = req.query;
+
+  // await addUsertoDB({
+  //   name: "mohamed",
+  //   email: "a@a.com",
+  //   password: "newpassword"
+  // });
+
+  getAllUsers(limit)
+    .then(users => {
+      console.log(`users`, users);
+      return res.status(200).send(users);
+    })
+    .catch(err => {
+      console.log(`err`, err);
+      return res.status(404).send({ err });
+    });
 })
 
 const getAllUsers = async (limit) => {
