@@ -23,21 +23,40 @@ async function main() {
   await mongoose.connect('mongodb+srv://sa:W6Ym9SRNV8j7yhpn@cluster0.upgxv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority');
 
   await addUsertoDB({
-    name:"mohamed",
+    name: "mohamed",
     email: "a@a.com",
     password: "newpassword"
   });
-  
-  const users = await User.find();
-  console.log(users);
+
+  console.log(await getAllUsers(10));
+
+  login({ email: "a@a.com", password: "newpassword1" }).then(u => console.log('user', u)).catch(err => console.log(`err`, err))
 }
 
-const addUsertoDB = async (user) =>{
+const getAllUsers = async (limit)=>{
+  return await User.find().limit(limit);
+}
+
+const addUsertoDB = async (user) => {
   //check if user exists before adding him
-  const user_exists = await User.find({email: user.email});
-  console.log(user_exists);
-  if(!user_exists.length){
+  const user_exists = await User.findOne({ email: user.email });
+  // console.log(user_exists);
+  if (!user_exists) {
     const new_user = new User(user);
     await new_user.save();
   }
+}
+
+const login = async (user) => {
+  //check if user exists
+  const existing_user = await User.findOne({ email: user.email });
+  // console.log(existing_user);
+  if (!existing_user) {
+    throw new Error("User doesn't exist!");
+  }
+  if (existing_user.password != user.password) {
+    throw new Error("Login failed");
+  }
+  existing_user.password = undefined;
+  return existing_user;
 }
