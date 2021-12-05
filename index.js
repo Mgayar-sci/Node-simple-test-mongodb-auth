@@ -45,16 +45,30 @@ app.get('/login', (req, res) => {
 
 app.get('/list', (req, res) => {
   const { limit = 10 } = req.query;
+  console.log(`limit`, limit);
 
-  getAllUsers(limit)
-    .then(users => {
-      console.log(`users`, users);
-      return res.status(200).send(users);
-    })
-    .catch(err => {
+  // //try using promises
+  // getAllUsers(limit)
+  //   .then(users => {
+  //     console.log(`users`, users);
+  //     return res.status(200).send(users);
+  //   })
+  //   .catch(err => {
+  //     console.log(`err`, err);
+  //     return res.status(404).send({ error: err.message });
+  //   });
+
+  //try using callback
+  User.find().limit(limit).select('-password').exec((err, users) => {
+    if (err) {
       console.log(`err`, err);
       return res.status(404).send({ error: err.message });
-    });
+    }
+    else {
+      console.log(`users`, users);
+      return res.status(200).send(users);
+    }
+  })
 })
 
 app.get('/register', (req, res) => {
@@ -73,8 +87,9 @@ app.get('/register', (req, res) => {
     })
 })
 
-const getAllUsers = async (limit) => {
-  return await User.find().limit(limit);
+const getAllUsers = async (n) => {
+  console.log(`n`, n);
+  return await (User.find().limit(n).select('-password'));
 }
 
 const addUsertoDB = async (user) => {
