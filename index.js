@@ -105,3 +105,9 @@ const login = async (user) => {
   existing_user.password = undefined;
   return existing_user;
 }
+
+app.get('/', (req, res) => {
+  return res.status(200).send("OK");
+});
+
+module.exports = app;
