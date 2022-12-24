@@ -14,6 +14,25 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const verifyTokenAndAuthorization = (req , res , next ) =>{
+  verifyToken(req , res , () => {
+    if (req.user.id === req.params.id || req.user.isAdmin){
+    next();
+    }else { 
+    res.status(401).json("Not allow to access");
+    }
+  });
+};
+const verifyTokenAndAdmin = (req , res , next ) =>{
+  verifyToken(req , res , () => {
+    if (req.user.isAdmin){
+    next();
+    }else { 
+    res.status(401).json("Not allow to access");
+    }
+  });
+};
+
 module.exports = {
-  verifyToken,
+  verifyToken,verifyTokenAndAuthorization,verifyTokenAndAdmin
 };
