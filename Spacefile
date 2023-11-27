@@ -1,0 +1,13 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+micros:
+  - name: Node-simple-test-mongodb-auth
+    src: ./
+    engine: nodejs16
+    primary: true
+    dev: nodemon index.js
+    presets:
+      env:
+        - name: MONGO_URL
+          description: mongo dtabase connection string
+          default: mongodb+srv://sa:qfRHj5YNJMEeAwv1@cs309fall2022.f2dcwnm.mongodb.net/myfirstdatabase?retryWrites=true&w=majority

@@ -62,6 +62,7 @@ app.get('/list', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
+  // console.log('name', JSON.stringify(req.body));
   if (!name || !email || !password) {
     return res.status(401).send({ error: "missing user data" });
   }
